@@ -25,13 +25,41 @@ def call(workspace_dir, output_dir, cache_dir)
   puts run("ruby -v")
   puts run("which ruby")
 
-  # calling `ruby -S` to avoid getting strange
-  # shebang lines like `#!/usr/bin/env ruby2.5`
-  puts run("ruby -S gem install bundler --env-shebang -v #{bundler_version} --no-ri --no-rdoc")
+  install_from_rubygems(bundler_version)
+  # install_from_github(
+  #   repo: "schneems/bundler",
+  #   bundler_name: bundler_name,
+  #   branch: "schneems/bundler-1-17-3-stable"
+  # )
 
   run("rm -rf #{workspace_dir}/cache/#{bundler_name}.gem") # smaller output
   run("mkdir #{bundler_name}")
   run("tar -cvzf #{output_dir}/#{bundler_name}.tgz -C #{workspace_dir} .")
+end
+
+
+def install_from_rubygems(bundler_version)
+  # calling `ruby -S` to avoid getting strange
+  # shebang lines like `#!/usr/bin/env ruby2.5`
+  puts run("ruby -S gem install bundler -v #{bundler_version} --env-shebang --no-ri --no-rdoc")
+end
+
+def install_from_github(repo: "bundler/bundler", branch: nil, cherry_pick: nil, bundler_name: )
+  puts run("git clone https://github.com/#{repo}")
+  Dir.chdir("bundler") do
+    puts run("git checkout #{branch}") if branch
+
+    if cherry_pick
+      run('git config --global user.email "you@example.com"')
+      run('git config --global user.name "Your Name"')
+      puts run("git cherry-pick #{cherry_pick}")
+    end
+
+    # calling `ruby -S` to avoid getting strange
+    # shebang lines like `#!/usr/bin/env ruby2.5`
+    puts run("ruby -S gem build -V bundler.gemspec")
+    puts run("ruby -S gem install ./#{bundler_name}.gem --local --env-shebang --no-ri --no-rdoc")
+  end
 end
 
 def run(cmd)
