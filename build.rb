@@ -4,6 +4,9 @@ require 'tmpdir'
 require 'fileutils'
 require 'uri'
 
+# Arguments set by default args in Dockerfile
+# the output directory is volume mounted to local /builds
+# via the `-v` command in `build.sh`
 workspace_dir = ARGV[0]
 output_dir    = ARGV[1]
 cache_dir     = ARGV[2]

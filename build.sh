@@ -6,6 +6,8 @@ CACHE_DIR=${CACHE_DIR:-`pwd`/cache}
 echo "OUTPUT DIR: $OUTPUT_DIR"
 echo "CACHE DIR:  $CACHE_DIR"
 
+# `-v` mounts the folume of <local-dir>:<docker-dir>
+
 docker build -t schneems/bundler-builder:heroku-18 .
 docker run -v $OUTPUT_DIR:/tmp/output -v $CACHE_DIR:/tmp/cache -e VERSION=2.5.3  -e STACK=heroku-18 schneems/bundler-builder:heroku-18
 
